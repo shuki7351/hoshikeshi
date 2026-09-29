@@ -180,6 +180,7 @@
     var nameWin = el('div', 'window dialog namewin');
     nameWin.appendChild(el('div', 'heading', 'なまえをいれてね'));
     var nameInput = el('input', 'field');
+    nameInput.name = 'playername';
     nameInput.maxLength = 10;
     nameInput.placeholder = '10もじまで';
     nameInput.autocomplete = 'off';
@@ -197,6 +198,7 @@
     var codeWin = el('div', 'window dialog codewin');
     codeWin.appendChild(el('div', 'heading', 'ひきつぎコード'));
     var codeInput = el('input', 'field code');
+    codeInput.name = 'transfercode';
     codeInput.maxLength = 16;
     codeInput.placeholder = 'XXXX-XXXX-XXXX';
     codeInput.autocomplete = 'off';
