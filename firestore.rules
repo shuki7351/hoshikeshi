@@ -1,0 +1,56 @@
+rules_version = '2';
+
+// ほしけし のスコア保存ルール
+// - ログインなし。推測できない12文字の「きろくID」を知っている人だけが読み書きできる
+// - スコアは書き足しのみ。変更・削除は誰にもできない
+// - プレイヤー情報は、名前の変更と「回数+1」「ベストの更新（下がらない）」だけ許可
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function validId(id) {
+      return id.matches('^[A-HJ-NP-Z2-9]{12}$');
+    }
+
+    function validName(n) {
+      return n is string && n.size() >= 1 && n.size() <= 10;
+    }
+
+    function validScore(s) {
+      return s is int && s >= 0 && s <= 1000000;
+    }
+
+    match /players/{pid} {
+      allow get: if validId(pid);
+
+      allow create: if validId(pid)
+        && request.resource.data.keys().hasOnly(['name', 'createdAt', 'plays', 'best'])
+        && validName(request.resource.data.name)
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.plays == 0
+        && request.resource.data.best == 0;
+
+      allow update: if validId(pid)
+        && request.resource.data.keys().hasOnly(['name', 'createdAt', 'plays', 'best'])
+        && request.resource.data.createdAt == resource.data.createdAt
+        && validName(request.resource.data.name)
+        && (request.resource.data.plays == resource.data.plays
+            || request.resource.data.plays == resource.data.plays + 1)
+        && validScore(request.resource.data.best)
+        && request.resource.data.best >= resource.data.best;
+
+      allow delete: if false;
+
+      match /scores/{sid} {
+        allow list: if validId(pid) && request.query.limit <= 50;
+
+        allow create: if validId(pid)
+          && exists(/databases/$(database)/documents/players/$(pid))
+          && request.resource.data.keys().hasOnly(['score', 'at'])
+          && validScore(request.resource.data.score)
+          && request.resource.data.at == request.time;
+
+        allow update, delete: if false;
+      }
+    }
+  }
+}

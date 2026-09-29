@@ -299,7 +299,7 @@ html, body {
   position: absolute;
   left: 0;
   right: 0;
-  top: 52px;
+  top: 46px;
   text-align: center;
   font-size: 34px;
   color: var(--rose);
@@ -308,7 +308,7 @@ html, body {
 .result .box {
   position: absolute;
   left: 106px;
-  top: 118px;
+  top: 100px;
   width: 296px;
   height: 64px;
   box-sizing: border-box;
@@ -319,7 +319,7 @@ html, body {
 .result .label {
   position: absolute;
   right: 159px;
-  top: 124px;
+  top: 106px;
   color: var(--rose);
   font-size: 38px;
   line-height: 50px;
@@ -328,17 +328,36 @@ html, body {
   position: absolute;
   left: 0;
   right: 0;
-  top: 180px;
+  top: 170px;
   text-align: center;
   font-size: 15px;
   color: var(--ink);
 }
 .result .best.new { color: var(--orange); }
-.result .retry {
+.result .cloud {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 192px;
+  text-align: center;
+  font-size: 14px;
+  color: var(--ink);
+}
+.result .retry,
+.result .records-small {
+  bottom: 22px;
+  width: 150px;
   left: 50%;
-  bottom: 24px;
-  width: 157px;
-  margin-left: -78px;
+}
+.result .retry { margin-left: 12px; }
+.result .records-small { margin-left: -162px; }
+
+/* タイトルの「きろく」 */
+.records-title {
+  left: 50%;
+  bottom: 40px;
+  width: 140px;
+  margin-left: -70px;
 }
 
 /* ---------- あそびかた ---------- */
@@ -396,3 +415,145 @@ html, body {
   bottom: 15px;
   width: 114px;
 }
+
+/* ---------- きろく（名前・ひきつぎコード・きろく一覧） ---------- */
+.dialog {
+  left: 50%;
+  top: 150px;
+  width: 460px;
+  margin-left: -230px;
+  box-sizing: border-box;
+  border-radius: 28px;
+  background: var(--paper);
+  border: 6px solid var(--sky-3);
+}
+.namewin { height: 340px; }
+.codewin { height: 290px; }
+.recwin { top: 110px; height: 560px; }
+.dialog .heading {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 22px;
+  text-align: center;
+  font-size: 26px;
+  color: var(--rose);
+  letter-spacing: 2px;
+}
+.dialog .field {
+  position: absolute;
+  left: 40px;
+  right: 40px;
+  top: 78px;
+  height: 58px;
+  box-sizing: border-box;
+  padding: 0 16px;
+  border-radius: 14px;
+  border: 3px solid var(--sky-3);
+  background: #fff;
+  font: 700 26px var(--font);
+  color: var(--ink);
+  outline: none;
+  -webkit-user-select: text;
+  user-select: text;
+}
+.dialog .field:focus { border-color: var(--rose-soft); }
+.dialog .field.code {
+  letter-spacing: 2px;
+  text-align: center;
+  font-family: ui-monospace, Menlo, Consolas, monospace;
+}
+.dialog .msg {
+  position: absolute;
+  left: 20px;
+  right: 20px;
+  top: 150px;
+  text-align: center;
+  font-size: 15px;
+  color: var(--ink);
+}
+.dialog .msg.error,
+.recwin .error { color: var(--orange); }
+.dialog .ok,
+.dialog .cancel {
+  width: 150px;
+  left: 50%;
+}
+.namewin .ok, .namewin .cancel { bottom: 76px; }
+.codewin .ok, .codewin .cancel { bottom: 30px; }
+.dialog .ok { margin-left: 10px; }
+.dialog .cancel { margin-left: -160px; }
+.dialog .link {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 26px;
+  text-align: center;
+  font-size: 15px;
+  color: #3f8fc5;
+  cursor: pointer;
+}
+.recbody {
+  position: absolute;
+  left: 44px;
+  right: 44px;
+  top: 74px;
+  color: var(--ink);
+  font-size: 16px;
+}
+.recbody .note { margin: 0 0 4px; line-height: 1.7; }
+.recbody .link { position: static; margin-top: 18px; text-align: left; }
+.recbody .subhead { font-size: 15px; color: var(--orange); margin-bottom: 4px; }
+.ranking {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: rank;
+}
+.ranking li {
+  counter-increment: rank;
+  display: flex;
+  align-items: baseline;
+  height: 25px;
+  font-size: 17px;
+  border-bottom: 2px dotted #eadfc8;
+}
+.ranking li::before {
+  content: counter(rank) '.';
+  width: 36px;
+  color: #b9a58c;
+  font-size: 15px;
+}
+.ranking li.empty::before { content: ''; }
+.ranking .pts { flex: 1; color: var(--rose); }
+.ranking .date { font-size: 14px; color: #b9a58c; }
+.recbody .plays { margin-top: 10px; font-size: 15px; }
+.codebox {
+  position: absolute;
+  left: 40px;
+  right: 40px;
+  bottom: 84px;
+  text-align: center;
+}
+.codebox:not(:empty) {
+  padding: 8px 0 10px;
+  border-radius: 14px;
+  background: var(--cream);
+  border: 2px solid var(--cream-edge);
+}
+.codebox .hint { font-size: 13px; color: var(--ink); }
+.codebox .value {
+  margin-top: 2px;
+  font: 700 24px ui-monospace, Menlo, Consolas, monospace;
+  letter-spacing: 2px;
+  color: var(--orange);
+  -webkit-user-select: text;
+  user-select: text;
+}
+.recwin .close {
+  left: 50%;
+  bottom: 22px;
+  width: 140px;
+  margin-left: -70px;
+}
+.dialog .field::placeholder { color: #cdbfae; font-weight: 400; }

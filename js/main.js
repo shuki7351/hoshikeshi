@@ -14,6 +14,7 @@
 
   var stage = document.getElementById('stage');
   var session = null;
+  var namePrompted = false;
 
   function el(tag, className, text) {
     var e = document.createElement(tag);
@@ -141,10 +142,16 @@
     result.appendChild(resultLabel);
     var bestLabel = el('div', 'best');
     result.appendChild(bestLabel);
+    var resultRecords = el('div', 'button pill records-small', 'きろく');
+    result.appendChild(resultRecords);
     var retry = el('div', 'button pill retry', 'タイトルへ');
     result.appendChild(retry);
     Anim.hide(result);
     retry.addEventListener('click', function () { session = new Session(); });
+    resultRecords.addEventListener('click', function () { openRecords(); });
+
+    var titleRecords = el('div', 'button pill records-title', 'きろく');
+    titleRecords.addEventListener('click', function () { openRecords(); });
 
     var help = el('div', 'window helpwin');
     help.appendChild(el('div', 'heading', 'あそびかた'));
@@ -165,14 +172,205 @@
     help.appendChild(close);
     Anim.hide(help);
 
-    [decoL, decoR, reset, score, blocker, title, startBtn, helpBtn, result, help]
+    // --- きろく（クラウド保存）の画面 ---
+    function button(label, className) { return el('div', 'button pill ' + (className || ''), label); }
+    function message(className) { return el('div', 'msg ' + (className || '')); }
+
+    // 名前を決める
+    var nameWin = el('div', 'window dialog namewin');
+    nameWin.appendChild(el('div', 'heading', 'なまえをいれてね'));
+    var nameInput = el('input', 'field');
+    nameInput.maxLength = 10;
+    nameInput.placeholder = '10もじまで';
+    nameInput.autocomplete = 'off';
+    nameWin.appendChild(nameInput);
+    var nameMsg = message();
+    nameMsg.textContent = 'スコアが ずっと残るよ';
+    nameWin.appendChild(nameMsg);
+    var nameOk = button('きめた！', 'ok');
+    var nameLater = button('あとで', 'cancel');
+    var toCode = el('div', 'link', 'ひきつぎコードを もっている →');
+    [nameOk, nameLater, toCode].forEach(function (e) { nameWin.appendChild(e); });
+    Anim.hide(nameWin);
+
+    // ひきつぎコードで呼び出す
+    var codeWin = el('div', 'window dialog codewin');
+    codeWin.appendChild(el('div', 'heading', 'ひきつぎコード'));
+    var codeInput = el('input', 'field code');
+    codeInput.maxLength = 16;
+    codeInput.placeholder = 'XXXX-XXXX-XXXX';
+    codeInput.autocomplete = 'off';
+    codeInput.autocapitalize = 'characters';
+    codeWin.appendChild(codeInput);
+    var codeMsg = message();
+    codeMsg.textContent = 'まえの端末で出したコードを 入れてね';
+    codeWin.appendChild(codeMsg);
+    var codeOk = button('よびだす', 'ok');
+    var codeBack = button('もどる', 'cancel');
+    [codeOk, codeBack].forEach(function (e) { codeWin.appendChild(e); });
+    Anim.hide(codeWin);
+
+    // きろく
+    var recWin = el('div', 'window dialog recwin');
+    var recHeading = el('div', 'heading');
+    recWin.appendChild(recHeading);
+    var recBody = el('div', 'recbody');
+    recWin.appendChild(recBody);
+    var recCode = el('div', 'codebox');
+    recWin.appendChild(recCode);
+    var recClose = button('とじる', 'close');
+    recWin.appendChild(recClose);
+    Anim.hide(recWin);
+
+    var dialogs = [nameWin, codeWin, recWin];
+    var pendingScore = null;   // 名前を決めたら送るスコア
+
+    function show(win) {
+      dialogs.forEach(function (d) { if (d !== win) Anim.fadeOut(d, 200); });
+      Anim.fadeIn(win, 300);
+    }
+    function hide(win) { Anim.fadeOut(win, 300); }
+
+    function openName(scoreToSend) {
+      pendingScore = scoreToSend;
+      nameMsg.textContent = 'スコアが ずっと残るよ';
+      nameMsg.classList.remove('error');
+      show(nameWin);
+    }
+
+    nameOk.addEventListener('click', function () {
+      var name = nameInput.value.trim();
+      if (!name) {
+        nameMsg.textContent = 'なまえを 入れてね';
+        nameMsg.classList.add('error');
+        return;
+      }
+      nameMsg.classList.remove('error');
+      nameMsg.textContent = 'とうろくちゅう…';
+      nameInput.blur();
+      Cloud.register(name).then(function () {
+        hide(nameWin);
+        if (pendingScore !== null) {
+          var s = pendingScore;
+          pendingScore = null;
+          sendScore(s);
+        }
+      }, function () {
+        nameMsg.textContent = 'つながらなかったよ。もういちど おしてね';
+        nameMsg.classList.add('error');
+      });
+    });
+    nameLater.addEventListener('click', function () { nameInput.blur(); hide(nameWin); });
+    toCode.addEventListener('click', function () {
+      codeMsg.textContent = 'まえの端末で出したコードを 入れてね';
+      codeMsg.classList.remove('error');
+      show(codeWin);
+    });
+
+    codeOk.addEventListener('click', function () {
+      codeMsg.classList.remove('error');
+      codeMsg.textContent = 'さがしています…';
+      codeInput.blur();
+      Cloud.restore(codeInput.value).then(function () {
+        hide(codeWin);
+        if (pendingScore !== null) {
+          var s = pendingScore;
+          pendingScore = null;
+          sendScore(s);
+        }
+        openRecords();
+      }, function (err) {
+        codeMsg.textContent = err.message === 'code'
+          ? 'コードは 12もじ だよ（ハイフンは なくてもOK）'
+          : err.status === 'NOT_FOUND' ? 'そのコードの きろくは 見つからなかったよ' : 'つながらなかったよ';
+        codeMsg.classList.add('error');
+      });
+    });
+    codeBack.addEventListener('click', function () {
+      codeInput.blur();
+      if (Cloud.hasPlayer()) hide(codeWin);
+      else show(nameWin);
+    });
+
+    function formatDate(d) {
+      var now = new Date();
+      if (d.toDateString() === now.toDateString()) return 'きょう';
+      return (d.getMonth() + 1) + '/' + d.getDate();
+    }
+
+    function openRecords() {
+      recBody.textContent = '';
+      recCode.textContent = '';
+      if (!Cloud.hasPlayer()) {
+        recHeading.textContent = 'きろく';
+        recBody.appendChild(el('p', 'note', 'まだ きろくが ないよ。'));
+        recBody.appendChild(el('p', 'note', 'ゲームオーバーのあとで なまえを入れると、'));
+        recBody.appendChild(el('p', 'note', 'スコアが ずっと残るようになるよ。'));
+        var nameLink = el('div', 'link', 'いま なまえを入れる →');
+        nameLink.addEventListener('click', function () { openName(pendingScore); });
+        recBody.appendChild(nameLink);
+        var link = el('div', 'link', 'ひきつぎコードを もっている →');
+        link.addEventListener('click', function () { show(codeWin); });
+        recBody.appendChild(link);
+        show(recWin);
+        return;
+      }
+      recHeading.textContent = (Cloud.name() || '') + ' の きろく';
+      recBody.appendChild(el('p', 'note', 'よみこみちゅう…'));
+      recCode.appendChild(el('div', 'hint', 'ひきつぎコード（スクショしておいてね）'));
+      recCode.appendChild(el('div', 'value', Cloud.code()));
+      show(recWin);
+      Cloud.flush().catch(function () {}).then(Cloud.records).then(function (r) {
+        recHeading.textContent = r.name + ' の きろく';
+        recBody.textContent = '';
+        recBody.appendChild(el('div', 'subhead', 'ベスト 10'));
+        var list = el('ol', 'ranking');
+        if (!r.top.length) list.appendChild(el('li', 'empty', 'まだ ないよ'));
+        r.top.forEach(function (t) {
+          var li = el('li');
+          li.appendChild(el('span', 'pts', String(t.score)));
+          li.appendChild(el('span', 'date', formatDate(t.at)));
+          list.appendChild(li);
+        });
+        recBody.appendChild(list);
+        recBody.appendChild(el('div', 'plays', 'あそんだ回数 ' + r.plays + '回'));
+        var waiting = Cloud.pending().length;
+        if (waiting) recBody.appendChild(el('div', 'plays', '送信まち ' + waiting + '件（つながったら送るよ）'));
+      }, function () {
+        recBody.textContent = '';
+        recBody.appendChild(el('p', 'note error', 'つながらなかったよ。あとで もういちど 見てね'));
+      });
+    }
+    recClose.addEventListener('click', function () { hide(recWin); });
+
+    [nameInput, codeInput].forEach(function (input) {
+      input.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') (input === nameInput ? nameOk : codeOk).click();
+      });
+    });
+
+    var cloudLabel = el('div', 'cloud');
+    result.appendChild(cloudLabel);
+
+    function sendScore(s) {
+      cloudLabel.textContent = 'きろくしています…';
+      Cloud.submit(s).then(function () {
+        cloudLabel.textContent = 'きろくしたよ';
+      }, function () {
+        cloudLabel.textContent = 'つながらなかったので、あとで送るね';
+      });
+    }
+
+    [decoL, decoR, reset, score, blocker, title, startBtn, helpBtn, titleRecords, result, help]
+      .concat(dialogs)
       .forEach(function (e) { stage.appendChild(e); });
 
     startBtn.addEventListener('click', function () {
       game.start();
       blocker.style.height = '0';
       Anim.fadeOut(help, 300);
-      [title, startBtn, helpBtn].forEach(function (e) { Anim.fadeOut(e, 200); });
+      dialogs.forEach(function (d) { Anim.fadeOut(d, 300); });
+      [title, startBtn, helpBtn, titleRecords].forEach(function (e) { Anim.fadeOut(e, 200); });
       [score, reset].forEach(function (e) { Anim.fadeIn(e, 200); });
     });
     helpBtn.addEventListener('click', function () { Anim.fadeIn(help, 300); });
@@ -198,6 +396,19 @@
       blocker.style.backgroundColor = 'rgba(255, 255, 255, 0.5)';
       Anim.hide(blocker);
       Anim.fadeIn(blocker, 1000);
+
+      if (Cloud.hasPlayer()) {
+        sendScore(finalScore);
+      } else {
+        cloudLabel.textContent = 'なまえを入れると きろくが残るよ';
+        // 名前入力は1回の訪問で1度だけ自動で出す（「あとで」を選んだら次のゲームでは出さない）
+        if (!namePrompted) {
+          namePrompted = true;
+          setTimeout(function () { openName(finalScore); }, 1200);
+        } else {
+          pendingScore = finalScore;
+        }
+      }
     }
 
     this.dispose = function () { game.stop(); };
@@ -222,4 +433,7 @@
   if (window.visualViewport) window.visualViewport.addEventListener('resize', fit);
 
   session = new Session();
+
+  // 前回送れなかったスコアがあれば、起動時に送り直す
+  Cloud.flush().catch(function () {});
 })();
