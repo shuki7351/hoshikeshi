@@ -1,13 +1,13 @@
-/* 星は単色フラット（案A）、色は淡めのパステル。文字と枠は濃いめにして見やすさを保つ */
+/* 星は単色フラット＋同系色の細フチ、色は淡めのパステル。縞は明暗差を小さく太くしてチラつきを抑える */
 :root {
-  --sky-1: #e3f3fc;        /* ストライプ */
-  --sky-2: #b5def6;
-  --sky-3: #8cc7ec;
-  --page: #e3f3fc;
+  --sky-1: #d6edfa;        /* ストライプ（明暗差を小さく、帯を太く） */
+  --sky-2: #c4e5f8;
+  --sky-3: #b3dcf5;
+  --page: #d6edfa;
 
-  --board-top: #fdfefa;    /* 盤面 */
-  --board-mid: #e7f4d7;
-  --board-bottom: #acd892;
+  --board-top: #eef7e3;    /* 盤面（上端も白くしすぎない） */
+  --board-mid: #d9edc4;
+  --board-bottom: #a3d189;
   --leaf-rim: #b5de9a;
 
   --cream: #fff4c9;        /* ボタン・SCORE の地 */
@@ -59,9 +59,9 @@ html, body {
   font-weight: 700;
   background: repeating-linear-gradient(
     to bottom,
-    var(--sky-1) 0 20px,
-    var(--sky-2) 20px 40px,
-    var(--sky-3) 40px 60px
+    var(--sky-1) 0 42px,
+    var(--sky-2) 42px 84px,
+    var(--sky-3) 84px 126px
   );
 }
 
