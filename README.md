@@ -25,3 +25,7 @@ docs/spec.md   動きと操作感を決める数値の仕様
 
 - 外部ライブラリは使っていません。
 - フォントは Google Fonts の M PLUS Rounded 1c です（SIL Open Font License）。
+
+## ライセンス
+
+ライセンスは設定していません。コード・画像の無断転載・再配布はご遠慮ください。
