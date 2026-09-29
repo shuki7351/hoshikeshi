@@ -24,4 +24,4 @@ docs/spec.md   動きと操作感を決める数値の仕様
 ```
 
 - 外部ライブラリは使っていません。
-- フォントは Google Fonts の Mochiy Pop One です（SIL Open Font License）。
+- フォントは Google Fonts の M PLUS Rounded 1c です（SIL Open Font License）。
