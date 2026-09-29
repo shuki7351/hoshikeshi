@@ -81,7 +81,7 @@ html, body {
 .board .cells {
   position: absolute;
   inset: 0;
-  background: url(../img/cell.svg) 0 0 / 72px 66px repeat;
+  background: url(../img/cell.svg?v=202609291723) 0 0 / 72px 66px repeat;
 }
 .star {
   position: absolute;
@@ -90,17 +90,17 @@ html, body {
   background: center / cover no-repeat;
   cursor: pointer;
 }
-.star.red    { background-image: url(../img/star-red.svg); }
-.star.pink   { background-image: url(../img/star-pink.svg); }
-.star.yellow { background-image: url(../img/star-yellow.svg); }
-.star.cyan   { background-image: url(../img/star-cyan.svg); }
+.star.red    { background-image: url(../img/star-red.svg?v=202609291723); }
+.star.pink   { background-image: url(../img/star-pink.svg?v=202609291723); }
+.star.yellow { background-image: url(../img/star-yellow.svg?v=202609291723); }
+.star.cyan   { background-image: url(../img/star-cyan.svg?v=202609291723); }
 
 /* ---------- 飾り ---------- */
 .deco {
   top: 20px;
   width: 156px;
   height: 81px;
-  background: url(../img/deco.svg) 0 0 / 100% 100% no-repeat;
+  background: url(../img/deco.svg?v=202609291723) 0 0 / 100% 100% no-repeat;
 }
 .deco.left { left: 30px; }
 .deco.right { right: 30px; transform: scaleX(-1); }
@@ -293,7 +293,7 @@ html, body {
   width: 96px;
   height: 88px;
   margin-left: -48px;
-  background: url(../img/star-yellow.svg) center / contain no-repeat;
+  background: url(../img/star-yellow.svg?v=202609291723) center / contain no-repeat;
 }
 .result .heading {
   position: absolute;
@@ -406,10 +406,10 @@ html, body {
   height: 37px;
   background: center / contain no-repeat;
 }
-.star-icon.red    { background-image: url(../img/star-red.svg); }
-.star-icon.pink   { background-image: url(../img/star-pink.svg); }
-.star-icon.yellow { background-image: url(../img/star-yellow.svg); }
-.star-icon.cyan   { background-image: url(../img/star-cyan.svg); }
+.star-icon.red    { background-image: url(../img/star-red.svg?v=202609291723); }
+.star-icon.pink   { background-image: url(../img/star-pink.svg?v=202609291723); }
+.star-icon.yellow { background-image: url(../img/star-yellow.svg?v=202609291723); }
+.star-icon.cyan   { background-image: url(../img/star-cyan.svg?v=202609291723); }
 .helpwin .close {
   right: 15px;
   bottom: 15px;
