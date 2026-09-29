@@ -1,13 +1,13 @@
-/* 星は単色フラット＋同系色の細フチ、色は淡めのパステル。縞は明暗差を小さく太くしてチラつきを抑える */
+/* 星は単色フラット＋同系色の細フチ、色はくっきりしたパステル。縞は明暗差を小さく太くしてチラつきを抑える */
 :root {
   --sky-1: #d6edfa;        /* ストライプ（明暗差を小さく、帯を太く） */
   --sky-2: #c4e5f8;
   --sky-3: #b3dcf5;
   --page: #d6edfa;
 
-  --board-top: #eef7e3;    /* 盤面（上端も白くしすぎない） */
-  --board-mid: #d9edc4;
-  --board-bottom: #a3d189;
+  --board-top: #e3f1d3;    /* 盤面（上端も白くしすぎない） */
+  --board-mid: #bfe0a0;
+  --board-bottom: #86bf6b;
   --leaf-rim: #b5de9a;
 
   --cream: #fff4c9;        /* ボタン・SCORE の地 */
